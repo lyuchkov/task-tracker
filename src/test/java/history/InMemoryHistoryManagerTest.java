@@ -53,8 +53,6 @@ public class InMemoryHistoryManagerTest {
         );
     }
 
-
-
     @Test
     public void historyWithModifiedTask() {
         TaskManager taskManager = Managers.getDefault();
@@ -73,13 +71,35 @@ public class InMemoryHistoryManagerTest {
 
         assertAll(
                 () -> assertThat(history.size())
-                        .isEqualTo(2),
+                        .isEqualTo(1),
 
                 () -> assertThat(history.getFirst().getDescription())
-                        .isEqualTo(DESC),
-
-                () -> assertThat(history.getLast().getDescription())
                         .isEqualTo(NEWDESC)
+        );
+    }
+
+
+    @Test
+    public void remove() {
+        TaskManager taskManager = Managers.getDefault();
+
+        Task task = new Task("name", DESC);
+
+        taskManager.createTask(task);
+        taskManager.getTask(task.getId());
+
+        task.setDescription(NEWDESC);
+        taskManager.updateTask(task);
+
+        taskManager.getTask(task.getId());
+
+        taskManager.deleteTask(task.getId());
+
+        List<Task> history = taskManager.getHistory();
+
+        assertAll(
+                () -> assertThat(history.size())
+                        .isEqualTo(0)
         );
     }
 
