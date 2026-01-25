@@ -2,39 +2,95 @@ package tracker.history;
 
 import tracker.tasks.Task;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private static final int MAX_HISTORY_SIZE = 10;
-    private final List<Task> history = new LinkedList<>();
+    private static class Node {
+        public Task data;
+        public Node next;
+        public Node prev;
+
+        public Node(Node prev, Task data, Node next) {
+            this.data = data;
+            this.next = next;
+            this.prev = prev;
+        }
+    }
+
+    private final Map<Long, Node> nodeMap = new HashMap<>();
+    private Node head;
+    private Node tail;
 
     @Override
     public void add(Task task) {
         if (task == null) {
             return;
         }
-        history.add(new Task(task));
-
-        if (history.size() > MAX_HISTORY_SIZE) {
-            history.removeFirst();
+        if (nodeMap.containsKey(task.getId())) {
+            removeNode(nodeMap.get(task.getId()));
         }
+        linkLast(task);
+    }
+
+    @Override
+    public void remove(long id) {
+        if (nodeMap.containsKey(id)) {
+            removeNode(nodeMap.get(id));
+        }
+    }
+
+    @Override
+    public List<Task> getHistory() {
+        List<Task> history = new ArrayList<>();
+        Node current = head;
+        while (current != null) {
+            history.add(current.data);
+            current = current.next;
+        }
+        return history;
+    }
+
+    private void linkLast(Task task) {
+        final Node oldTail = tail;
+        final Node newNode = new Node(oldTail, task, null);
+        tail = newNode;
+        if (oldTail == null) {
+            head = newNode;
+        } else {
+            oldTail.next = newNode;
+        }
+
+        nodeMap.put(task.getId(), newNode);
+    }
+
+    private void removeNode(Node node) {
+        nodeMap.remove(node.data.getId());
+
+        final Node next = node.next;
+        final Node prev = node.prev;
+
+        if (prev == null) {
+            head = next;
+        } else {
+            prev.next = next;
+            node.prev = null;
+        }
+
+        if (next == null) {
+            tail = prev;
+        } else {
+            next.prev = prev;
+            node.next = null;
+        }
+
+        node.data = null;
     }
 
     public void addAll(Collection<Task> taskCollection) {
         if (taskCollection == null) {
             return;
         }
-        if (history.size() + taskCollection.size() >= MAX_HISTORY_SIZE) {
-            history.subList(0, Math.abs(MAX_HISTORY_SIZE - history.size() - taskCollection.size())).clear();
-        }
 
-        history.addAll(taskCollection.stream().map(Task::new).toList());
-    }
-
-    @Override
-    public List<Task> getHistory() {
-        return new LinkedList<>(history);
+        taskCollection.forEach(this::add);
     }
 }
