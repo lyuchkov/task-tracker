@@ -13,7 +13,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         this.file = file;
     }
 
-    private void save() {
+    public void save() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, StandardCharsets.UTF_8))) {
             writer.write("id,type,name,status,description,epic");
             writer.newLine();
@@ -36,7 +36,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private String toString(Task task) {
-        String type =  TaskType.TASK.name();
+        String type = TaskType.TASK.name();
         String epicId = "";
 
         if (task instanceof Epic) {
@@ -93,7 +93,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         return switch (type) {
             case EPIC -> new Epic(id, name, description);
             case SUBTASK -> {
-                long epicId = Integer.parseInt(parts[5]);
+                long epicId = Long.parseLong(parts[5]);
                 yield new Subtask(id, name, description, status, epicId);
             }
             default -> new Task(id, name, description, status);
