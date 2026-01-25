@@ -1,5 +1,8 @@
 package tracker.tasks;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public class Subtask extends Task {
     private final long epicId;
 
@@ -12,6 +15,14 @@ public class Subtask extends Task {
     public Subtask(long id, String name, String description, long epicId) {
         super(id, name, description, Status.NEW);
         this.epicId = epicId;
+    }
+
+
+    public Subtask(long id, String name, String description, long epicId, Duration duration, LocalDateTime start) {
+        super(id, name, description, Status.NEW);
+        this.epicId = epicId;
+        this.duration = duration;
+        this.startTime = start;
     }
 
     public long getEpicId() {
