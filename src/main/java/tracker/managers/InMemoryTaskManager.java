@@ -28,7 +28,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task createTask(Task task) {
-        task.setId(task.getId() == 0L ? getIdByString(task.getName()) : task.getId());
+        task.setId(task.getId() == 0L ? getIdByString(task.toString()) : task.getId());
         tasks.put(task.getId(), task);
         return task;
     }
