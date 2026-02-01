@@ -11,8 +11,8 @@ import tracker.utility.Managers;
 
 import java.util.List;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class InMemoryHistoryManagerTest {
 
@@ -41,15 +41,9 @@ public class InMemoryHistoryManagerTest {
         List<Task> history = taskManager.getHistory();
 
         assertAll(
-                () -> assertThat(history.size())
-                        .isEqualTo(2),
-
-                () -> assertThat(history.getFirst().getId())
-                        .isEqualTo(epic1.getId()),
-
-                () -> assertThat(history.getLast().getId())
-                        .isEqualTo(task2.getId())
-
+                () -> assertEquals(2, history.size()),
+                () -> assertEquals(epic1.getId(), history.getFirst().getId()),
+                () -> assertEquals(task2.getId(), history.getLast().getId())
         );
     }
 
@@ -70,11 +64,9 @@ public class InMemoryHistoryManagerTest {
         List<Task> history = taskManager.getHistory();
 
         assertAll(
-                () -> assertThat(history.size())
-                        .isEqualTo(1),
+                () -> assertEquals(1, history.size()),
 
-                () -> assertThat(history.getFirst().getDescription())
-                        .isEqualTo(NEWDESC)
+                () -> assertEquals(NEWDESC, history.getFirst().getDescription())
         );
     }
 
@@ -97,10 +89,7 @@ public class InMemoryHistoryManagerTest {
 
         List<Task> history = taskManager.getHistory();
 
-        assertAll(
-                () -> assertThat(history.size())
-                        .isEqualTo(0)
-        );
+        assertEquals(0, history.size());
     }
 
 }

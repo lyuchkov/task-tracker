@@ -9,8 +9,8 @@ import tracker.tasks.Subtask;
 import tracker.tasks.Task;
 import tracker.utility.Managers;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class InMemoryTaskManagerTest {
     @Test
@@ -29,9 +29,7 @@ public class InMemoryTaskManagerTest {
         task2.setStatus(Status.DONE);
         taskManager.updateSubtask(task2);
 
-        assertThat(epic1.getStatus())
-                .as("Ожидалось изменение статуса эпика на " + Status.DONE.name() + " при закрытии всех задач")
-                .isEqualTo(Status.DONE);
+        assertEquals(Status.DONE, epic1.getStatus());
     }
 
     @Test
@@ -42,8 +40,7 @@ public class InMemoryTaskManagerTest {
 
         taskManager.createTask(task);
 
-        assertThat(taskManager.getTask(1L))
-                .isEqualTo(task);
+        assertEquals(taskManager.getTask(1L), task);
     }
 
     @Test
@@ -56,12 +53,9 @@ public class InMemoryTaskManagerTest {
         taskManager.createTask(task1);
         taskManager.createTask(task2);
 
-            assertAll(
-                () ->
-                        assertThat(taskManager.getTask(1L))
-                                .isEqualTo(task1),
-                () -> assertThat(taskManager.getTask(task2.getId()))
-                        .isEqualTo(task2)
+        assertAll(
+                () -> assertEquals(taskManager.getTask(1L), task1),
+                () -> assertEquals(taskManager.getTask(task2.getId()), task2)
         );
 
     }

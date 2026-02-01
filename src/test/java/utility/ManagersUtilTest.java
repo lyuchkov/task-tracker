@@ -5,17 +5,16 @@ import tracker.history.InMemoryHistoryManager;
 import tracker.managers.InMemoryTaskManager;
 import tracker.utility.Managers;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ManagersUtilTest {
     @Test
-    public void smoke(){
-        assertThat(Managers.getDefault())
-                .isInstanceOf(InMemoryTaskManager.class);
+    public void smoke() {
+        assertEquals(InMemoryTaskManager.class, Managers.getDefault().getClass());
     }
+
     @Test
-    public void smokeHistory(){
-        assertThat(Managers.getDefaultHistory())
-                .isInstanceOf(InMemoryHistoryManager.class);
+    public void smokeHistory() {
+        assertEquals(InMemoryHistoryManager.class, Managers.getDefaultHistory().getClass());
     }
 }
