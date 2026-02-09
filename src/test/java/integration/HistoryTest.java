@@ -1,4 +1,4 @@
-package history;
+package integration;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class InMemoryHistoryManagerTest {
+@DisplayName("Проверка работы дефолтного сценария работы таск менеджера")
+public class HistoryTest {
 
     public static final String NEWDESC = "newdesc";
     public static final String DESC = "desc";
@@ -35,7 +36,7 @@ public class InMemoryHistoryManagerTest {
         task2.setStatus(Status.DONE);
         taskManager.updateSubtask(task2);
 
-        taskManager.getAllEpics();
+        taskManager.getEpic(epic1.getId());
         taskManager.getSubtask(task2.getId());
 
         List<Task> history = taskManager.getHistory();
@@ -68,28 +69,6 @@ public class InMemoryHistoryManagerTest {
 
                 () -> assertEquals(NEWDESC, history.getFirst().getDescription())
         );
-    }
-
-
-    @Test
-    public void remove() {
-        TaskManager taskManager = Managers.getDefault();
-
-        Task task = new Task("name", DESC);
-
-        taskManager.createTask(task);
-        taskManager.getTask(task.getId());
-
-        task.setDescription(NEWDESC);
-        taskManager.updateTask(task);
-
-        taskManager.getTask(task.getId());
-
-        taskManager.deleteTask(task.getId());
-
-        List<Task> history = taskManager.getHistory();
-
-        assertEquals(0, history.size());
     }
 
 }

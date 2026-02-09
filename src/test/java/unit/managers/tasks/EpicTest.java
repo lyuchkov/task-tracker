@@ -1,4 +1,4 @@
-package tasks;
+package unit.managers.tasks;
 
 import org.junit.jupiter.api.Test;
 import tracker.tasks.Epic;

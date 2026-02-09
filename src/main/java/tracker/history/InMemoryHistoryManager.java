@@ -86,11 +86,4 @@ public class InMemoryHistoryManager implements HistoryManager {
         node.data = null;
     }
 
-    public void addAll(Collection<Task> taskCollection) {
-        if (taskCollection == null) {
-            return;
-        }
-
-        taskCollection.forEach(this::add);
-    }
 }

@@ -1,4 +1,4 @@
-package utility;
+package unit.utility;
 
 import org.junit.jupiter.api.Test;
 import tracker.history.InMemoryHistoryManager;
