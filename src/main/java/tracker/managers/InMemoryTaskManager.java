@@ -168,7 +168,25 @@ public class InMemoryTaskManager implements TaskManager {
         return result;
     }
 
-    void updateEpicStatus(Epic epic) {
+    public ArrayList<Subtask> getAllSubtasks() {
+        ArrayList<Subtask> subtasks = new ArrayList<>(this.subtasks.values());
+        subtasks.forEach(historyManager::add);
+        return subtasks;
+    }
+
+    public ArrayList<Epic> getAllEpics() {
+        ArrayList<Epic> epics = new ArrayList<>(this.epics.values());
+        epics.forEach(historyManager::add);
+        return epics;
+    }
+
+    public ArrayList<Task> getAllTasks() {
+        ArrayList<Task> tasks = new ArrayList<>(this.tasks.values());
+        tasks.forEach(historyManager::add);
+        return tasks;
+    }
+
+   public void updateEpicStatus(Epic epic) {
         if (epic.getSubtaskIds().isEmpty()) {
             epic.setStatus(Status.NEW);
             return;
