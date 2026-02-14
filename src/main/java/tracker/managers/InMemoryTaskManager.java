@@ -14,9 +14,9 @@ import java.util.List;
 import static tracker.utility.IdUtils.getIdByString;
 
 public class InMemoryTaskManager implements TaskManager {
-    private final HashMap<Long, Task> tasks = new HashMap<>();
-    private final HashMap<Long, Epic> epics = new HashMap<>();
-    private final HashMap<Long, Subtask> subtasks = new HashMap<>();
+    protected final HashMap<Long, Task> tasks = new HashMap<>();
+    protected final HashMap<Long, Epic> epics = new HashMap<>();
+    protected final HashMap<Long, Subtask> subtasks = new HashMap<>();
 
     private final HistoryManager historyManager = Managers.getDefaultHistory();
 
@@ -185,7 +185,7 @@ public class InMemoryTaskManager implements TaskManager {
         return result;
     }
 
-    private void updateEpicStatus(Epic epic) {
+    void updateEpicStatus(Epic epic) {
         if (epic.getSubtaskIds().isEmpty()) {
             epic.setStatus(Status.NEW);
             return;
