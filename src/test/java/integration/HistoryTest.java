@@ -1,4 +1,4 @@
-package history;
+package integration;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,10 +11,11 @@ import tracker.utility.Managers;
 
 import java.util.List;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class InMemoryHistoryManagerTest {
+@DisplayName("Проверка работы дефолтного сценария работы таск менеджера")
+public class HistoryTest {
 
     public static final String NEWDESC = "newdesc";
     public static final String DESC = "desc";
@@ -35,25 +36,17 @@ public class InMemoryHistoryManagerTest {
         task2.setStatus(Status.DONE);
         taskManager.updateSubtask(task2);
 
-        taskManager.getAllEpics();
+        taskManager.getEpic(epic1.getId());
         taskManager.getSubtask(task2.getId());
 
         List<Task> history = taskManager.getHistory();
 
         assertAll(
-                () -> assertThat(history.size())
-                        .isEqualTo(2),
-
-                () -> assertThat(history.getFirst().getId())
-                        .isEqualTo(epic1.getId()),
-
-                () -> assertThat(history.getLast().getId())
-                        .isEqualTo(task2.getId())
-
+                () -> assertEquals(2, history.size()),
+                () -> assertEquals(epic1.getId(), history.getFirst().getId()),
+                () -> assertEquals(task2.getId(), history.getLast().getId())
         );
     }
-
-
 
     @Test
     public void historyWithModifiedTask() {
@@ -72,14 +65,9 @@ public class InMemoryHistoryManagerTest {
         List<Task> history = taskManager.getHistory();
 
         assertAll(
-                () -> assertThat(history.size())
-                        .isEqualTo(2),
+                () -> assertEquals(1, history.size()),
 
-                () -> assertThat(history.getFirst().getDescription())
-                        .isEqualTo(DESC),
-
-                () -> assertThat(history.getLast().getDescription())
-                        .isEqualTo(NEWDESC)
+                () -> assertEquals(NEWDESC, history.getFirst().getDescription())
         );
     }
 
