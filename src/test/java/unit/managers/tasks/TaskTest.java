@@ -1,4 +1,4 @@
-package tasks;
+package unit.managers.tasks;
 
 import org.junit.jupiter.api.Test;
 import tracker.tasks.Epic;
@@ -6,7 +6,7 @@ import tracker.tasks.Status;
 import tracker.tasks.Subtask;
 import tracker.tasks.Task;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TaskTest {
 
@@ -25,8 +25,7 @@ public class TaskTest {
                 Status.DONE
         );
 
-        assertThat(task1)
-                .isEqualTo(task2);
+        assertEquals(task1, task2);
     }
 
     @Test
@@ -43,7 +42,6 @@ public class TaskTest {
                 1L
         );
 
-        assertThat(task1)
-                .isEqualTo(task2);
+        assertEquals(task1, task2);
     }
 }
