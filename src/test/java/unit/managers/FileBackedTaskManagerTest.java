@@ -1,4 +1,4 @@
-package managers;
+package unit.managers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,10 +8,11 @@ import tracker.tasks.Epic;
 import tracker.tasks.Status;
 import tracker.tasks.Subtask;
 import tracker.tasks.Task;
-import tracker.utility.Managers;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.util.List;
 
@@ -26,13 +27,16 @@ public class FileBackedTaskManagerTest {
     @BeforeEach
     public void setUp() throws IOException {
         tempFile = File.createTempFile("test_tasks", ".csv");
-        manager = (FileBackedTaskManager) Managers.getFileBacked(tempFile);
+        manager = new FileBackedTaskManager(tempFile);
     }
 
     @Test
-    public void testSaveAndLoadEmptyFile() {
-        manager.save();
-        FileBackedTaskManager loadedManager = (FileBackedTaskManager) Managers.getFileBacked(tempFile);
+    public void save_saveCorrectly_emptyTasks() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method saveMethod = FileBackedTaskManager.class.getDeclaredMethod("save");
+
+        saveMethod.setAccessible(true);
+        saveMethod.invoke(manager);
+        FileBackedTaskManager loadedManager =  new FileBackedTaskManager(tempFile);
 
         assertThat(loadedManager.getAllTasks()).isEmpty();
         assertThat(loadedManager.getAllEpics()).isEmpty();
@@ -70,7 +74,7 @@ public class FileBackedTaskManagerTest {
         Subtask subtask = new Subtask("S1", "D1", epicId);
         long subId = manager.createSubtask(subtask).getId();
 
-        FileBackedTaskManager loadedManager = (FileBackedTaskManager) Managers.getFileBacked(tempFile);
+        FileBackedTaskManager loadedManager =  new FileBackedTaskManager(tempFile);
 
         assertThat(loadedManager.getAllTasks()).hasSize(1);
         assertThat(loadedManager.getAllEpics()).hasSize(1);
@@ -94,7 +98,7 @@ public class FileBackedTaskManagerTest {
         subtask.setStatus(Status.DONE);
         manager.createSubtask(subtask);
 
-        FileBackedTaskManager loadedManager = (FileBackedTaskManager) Managers.getFileBacked(tempFile);
+        FileBackedTaskManager loadedManager =  new FileBackedTaskManager(tempFile);
 
         assertThat(loadedManager.getEpic(epicId).getStatus()).isEqualTo(Status.DONE);
     }
@@ -102,9 +106,8 @@ public class FileBackedTaskManagerTest {
     @Test
     public void testExceptionOnInvalidFile() {
         File invalidFile = new File("/non/existent/path/file.csv");
-        FileBackedTaskManager brokenManager = new FileBackedTaskManager(invalidFile);
 
-        assertThatThrownBy(() -> brokenManager.createTask(new Task("T", "D")))
+        assertThatThrownBy(() -> new FileBackedTaskManager(invalidFile))
                 .isInstanceOf(ManagerSaveException.class);
     }
 }

@@ -1,4 +1,4 @@
-package managers;
+package unit.managers;
 
 import org.junit.jupiter.api.Test;
 import tracker.managers.TaskManager;
@@ -36,7 +36,7 @@ public abstract class TaskManagerDurationTest <T extends TaskManager> {
 
         assertThat(manager.getSubtask(subtask.getId())).isNotNull();
         assertThat(manager.getSubtask(subtask.getId()).getEpicId()).isEqualTo(epic.getId());
-        assertThat(epic.getSubtaskIds()).asList().contains(subtask.getId());
+        assertThat(epic.getSubtaskIds().contains(subtask.getId())).isTrue();
     }
 
     @Test

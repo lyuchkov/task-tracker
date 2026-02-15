@@ -14,10 +14,8 @@ public final class Managers {
         return new InMemoryTaskManager();
     }
 
-    public static TaskManager getFileBacked(File file){
-        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(file);
-        if(file.exists())  return fileBackedTaskManager.loadFromFile();
-        return fileBackedTaskManager;
+    public static TaskManager getFileBacked(File file) {
+        return FileBackedTaskManager.loadFromFile(file);
     }
 
     public static HistoryManager getDefaultHistory() {
