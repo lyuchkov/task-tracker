@@ -86,7 +86,6 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Epic createEpic(Epic epic) {
-        validateIntersections(epic);
         epic.setId(getIdByString(epic.getName()));
         epics.put(epic.getId(), epic);
         return epic;
@@ -194,6 +193,7 @@ public class InMemoryTaskManager implements TaskManager {
         epics.values().forEach(epic -> {
             epic.cleanSubtaskIds();
             epic.setStatus(Status.NEW);
+            updateEpicStatus(epic);
         });
     }
 
@@ -219,7 +219,7 @@ public class InMemoryTaskManager implements TaskManager {
         return new ArrayList<>(this.tasks.values());
     }
 
-    public void updateEpicStatus(Epic epic) {
+    protected void updateEpicStatus(Epic epic) {
         if (epic.getSubtaskIds().isEmpty()) {
             epic.setStatus(Status.NEW);
             return;
@@ -235,61 +235,40 @@ public class InMemoryTaskManager implements TaskManager {
         else if (allNew) epic.setStatus(Status.NEW);
         else epic.setStatus(Status.IN_PROGRESS);
 
-        updateEpicTime(epic);
     }
 
     private void updateEpicTime(Epic epic) {
-        List<Long> subs = epic.getSubtaskIds();
-        if (subs.isEmpty()) {
+        List<Subtask> subtasksList = epic.getSubtaskIds().stream()
+                .map(subtasks::get)
+                .filter(Objects::nonNull)
+                .toList();
+
+        if (subtasksList.isEmpty()) {
             epic.setDuration(Duration.ZERO);
             epic.setStartTime(null);
             epic.setEndTime(null);
             return;
         }
 
-        LocalDateTime minStart = null;
-        LocalDateTime maxEnd = null;
-        Duration totalDuration = Duration.ZERO;
-
-        for (Long id : subs) {
-            Subtask subtask = subtasks.get(id);
-            if (subtask == null) continue;
-
-            if (subtask.getDuration() != null) {
-                totalDuration = totalDuration.plus(subtask.getDuration());
-            }
-
-            LocalDateTime subStart = subtask.getStartTime();
-            if (subStart != null) {
-                if (minStart == null || subStart.isBefore(minStart)) {
-                    minStart = subStart;
-                }
-            }
-
-            LocalDateTime subEnd = subtask.getEndTime();
-            if (subEnd != null) {
-                if (maxEnd == null || subEnd.isAfter(maxEnd)) {
-                    maxEnd = subEnd;
-                }
-            }
-        }
-
+        Duration totalDuration = subtasksList.stream()
+                .map(Task::getDuration)
+                .filter(Objects::nonNull)
+                .reduce(Duration.ZERO, Duration::plus);
         epic.setDuration(totalDuration);
-        epic.setStartTime(minStart);
-        epic.setEndTime(maxEnd);
-    }
 
-    private boolean isOverlap(Task t1, Task t2) {
-        if (t1.getStartTime() == null || t2.getStartTime() == null) {
-            return false;
+        List<Subtask> sortedSubtasks = subtasksList.stream()
+                .filter(sub -> sub.getStartTime() != null)
+                .sorted(Comparator.comparing(Task::getStartTime))
+                .toList();
+
+        if (sortedSubtasks.isEmpty()) {
+            epic.setStartTime(null);
+            epic.setEndTime(null);
+            return;
         }
 
-        LocalDateTime start1 = t1.getStartTime();
-        LocalDateTime end1 = t1.getEndTime();
-        LocalDateTime start2 = t2.getStartTime();
-        LocalDateTime end2 = t2.getEndTime();
-
-        return start1.isBefore(end2) && start2.isBefore(end1);
+        epic.setStartTime(sortedSubtasks.getFirst().getStartTime());
+        epic.setEndTime(sortedSubtasks.getLast().getEndTime());
     }
 
     private void validateIntersections(Task task) {
@@ -306,4 +285,18 @@ public class InMemoryTaskManager implements TaskManager {
             throw new IllegalArgumentException("Задача пересекается по времени с уже существующими");
         }
     }
+
+    private boolean isOverlap(Task t1, Task t2) {
+        if (t1.getStartTime() == null || t2.getStartTime() == null) {
+            return false;
+        }
+
+        LocalDateTime start1 = t1.getStartTime();
+        LocalDateTime end1 = t1.getEndTime();
+        LocalDateTime start2 = t2.getStartTime();
+        LocalDateTime end2 = t2.getEndTime();
+
+        return start1.isBefore(end2) && start2.isBefore(end1);
+    }
+
 }

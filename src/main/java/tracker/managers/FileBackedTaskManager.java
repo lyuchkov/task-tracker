@@ -2,6 +2,7 @@ package tracker.managers;
 
 import tracker.managers.exceptions.ManagerSaveException;
 import tracker.tasks.*;
+import tracker.utility.DateUtils;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -17,7 +18,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private void save() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, StandardCharsets.UTF_8))) {
-            writer.write("id,type,name,status,description,epic");
+            writer.write("id,type,name,status,description,epic,duration,startDate");
             writer.newLine();
 
             for (Task task : getAllTasks()) {
@@ -42,13 +43,16 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private static String getRow(Task task, String type, String epicId) {
-        return String.format("%d,%s,%s,%s,%s,%s",
+        return String.format("%d,%s,%s,%s,%s,%s,%s,%s",
                 task.getId(),
                 type,
                 task.getName(),
                 task.getStatus(),
                 task.getDescription(),
-                epicId);
+                epicId,
+                DateUtils.getPrettyString(task.getDuration()),
+                DateUtils.getPrettyString(task.getStartTime())
+        );
     }
 
     private String convertToString(Epic epic) {
@@ -118,9 +122,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             if (epic != null) epic.addSubtaskId(subtask.getId());
         }
 
-        for (Epic epic : epics.values()) {
-            updateEpicStatus(epic);
-        }
+        epics.values().forEach(this::updateEpicStatus);
     }
 
     @Override
