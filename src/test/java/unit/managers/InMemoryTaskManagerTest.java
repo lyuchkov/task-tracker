@@ -1,4 +1,4 @@
-package unit.managers.managers;
+package unit.managers;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,7 +40,7 @@ public class InMemoryTaskManagerTest {
 
         taskManager.createTask(task);
 
-        assertEquals(taskManager.getTask(1L), task);
+        assertEquals(taskManager.getTask(task.getId()), task);
     }
 
     @Test
@@ -54,7 +54,7 @@ public class InMemoryTaskManagerTest {
         taskManager.createTask(task2);
 
         assertAll(
-                () -> assertEquals(taskManager.getTask(1L), task1),
+                () -> assertEquals(taskManager.getTask(task1.getId()), task1),
                 () -> assertEquals(taskManager.getTask(task2.getId()), task2)
         );
 

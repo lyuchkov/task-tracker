@@ -9,8 +9,11 @@ import tracker.tasks.Subtask;
 import tracker.tasks.Task;
 import tracker.utility.Managers;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -71,4 +74,43 @@ public class HistoryTest {
         );
     }
 
+
+    @Test
+    public void testSaveAndLoadWithTime() {
+        TaskManager manager = Managers.getDefault();
+        LocalDateTime start = LocalDateTime.of(2026, 1, 1, 10, 0);
+        Task task = new Task("TimeTask", "Desc", Duration.ofMinutes(30), start);
+
+        manager.createTask(task);
+
+        Task loadedTask = manager.getTask(task.getId());
+
+        assertThat(loadedTask.getStartTime()).isEqualTo(start);
+        assertThat(loadedTask.getDuration().toMinutes()).isEqualTo(30);
+        assertThat(loadedTask.getEndTime()).isEqualTo(start.plusMinutes(30));
+    }
+
+    @Test
+    public void testEpicTimeCalculation() {
+        TaskManager manager = Managers.getDefault();
+        Epic epic = manager.createEpic(new Epic("Epic", "Desc"));
+
+        LocalDateTime start1 = LocalDateTime.of(2026, 1, 1, 10, 0);
+        Subtask sub1 = new Subtask(1, "S1", "D", epic.getId(), Duration.ofMinutes(60), start1);
+        manager.createSubtask(sub1);
+
+        LocalDateTime start2 = LocalDateTime.of(2026, 1, 1, 12, 0);
+        Subtask sub2 = new Subtask(2, "S2", "D", epic.getId(), Duration.ofMinutes(30), start2);
+        manager.createSubtask(sub2);
+
+        assertThat(epic.getStartTime()).isEqualTo(start1);
+        assertThat(epic.getEndTime()).isEqualTo(start2.plusMinutes(30));
+        assertThat(epic.getDuration().toMinutes()).isEqualTo(90);
+
+        Epic loadedEpic = manager.getEpic(epic.getId());
+
+        assertThat(loadedEpic.getStartTime()).isEqualTo(start1);
+        assertThat(loadedEpic.getEndTime()).isEqualTo(start2.plusMinutes(30));
+        assertThat(loadedEpic.getDuration().toMinutes()).isEqualTo(90);
+    }
 }

@@ -1,4 +1,4 @@
-package unit.managers.tasks;
+package unit.tasks;
 
 import org.junit.jupiter.api.Test;
 import tracker.tasks.Epic;
@@ -29,6 +29,7 @@ public class TaskTest {
     }
 
     @Test
+    @SuppressWarnings("AssertBetweenInconvertibleTypes")
     public void tasksWithDifClassesEqualTest() {
         Epic task1 = new Epic(
                 1L,
