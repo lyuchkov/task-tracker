@@ -1,4 +1,4 @@
-package unit.managers.managers;
+package unit.managers;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
