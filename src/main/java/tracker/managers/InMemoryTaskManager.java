@@ -192,8 +192,8 @@ public class InMemoryTaskManager implements TaskManager {
         subtasks.clear();
         epics.values().forEach(epic -> {
             epic.cleanSubtaskIds();
-            epic.setStatus(Status.NEW);
             updateEpicStatus(epic);
+            updateEpicTime(epic);
         });
     }
 
@@ -237,7 +237,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     }
 
-    private void updateEpicTime(Epic epic) {
+    protected void updateEpicTime(Epic epic) {
         List<Subtask> subtasksList = epic.getSubtaskIds().stream()
                 .map(subtasks::get)
                 .filter(Objects::nonNull)
