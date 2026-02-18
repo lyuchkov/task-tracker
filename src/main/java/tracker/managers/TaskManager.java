@@ -15,6 +15,12 @@ public interface TaskManager {
 
     Task getTask(long id);
 
+    ArrayList<Subtask> getAllSubtasks();
+
+    ArrayList<Epic> getAllEpics();
+
+    ArrayList<Task> getAllTasks();
+
     void deleteTask(long id);
 
     void deleteAllTasks();

@@ -72,6 +72,21 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
+    public ArrayList<Subtask> getAllSubtasks() {
+        return new ArrayList<>(this.subtasks.values());
+    }
+
+    @Override
+    public ArrayList<Epic> getAllEpics() {
+        return new ArrayList<>(this.epics.values());
+    }
+
+    @Override
+    public ArrayList<Task> getAllTasks() {
+        return new ArrayList<>(this.tasks.values());
+    }
+
+    @Override
     public void deleteTask(long id) {
         Task task = tasks.remove(id);
         if (task != null) {
@@ -205,18 +220,6 @@ public class InMemoryTaskManager implements TaskManager {
             result = epic.getSubtaskIds().stream().map(subtasks::get).collect(Collectors.toCollection(ArrayList::new));
         }
         return result;
-    }
-
-    public ArrayList<Subtask> getAllSubtasks() {
-        return new ArrayList<>(this.subtasks.values());
-    }
-
-    public ArrayList<Epic> getAllEpics() {
-        return new ArrayList<>(this.epics.values());
-    }
-
-    public ArrayList<Task> getAllTasks() {
-        return new ArrayList<>(this.tasks.values());
     }
 
     protected void updateEpicStatus(Epic epic) {
